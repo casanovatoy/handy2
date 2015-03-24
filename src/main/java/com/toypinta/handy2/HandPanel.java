@@ -58,7 +58,7 @@ public class HandPanel extends JPanel implements Runnable {
             return;
         }
 
-        detector = new HandDetector("E:\\Eng\\Project\\Java Code\\06. HandDetector\\gloveHSV.txt", WIDTH, HEIGHT);
+        detector = new HandDetector("src\\main\\resources\\gloveHSV.txt", WIDTH, HEIGHT);
         // include the HSV color info about the user's gloved hand
 
         long duration;
