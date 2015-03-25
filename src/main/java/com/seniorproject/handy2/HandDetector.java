@@ -158,18 +158,20 @@ public class HandDetector {
      * (assuming that the thumb is on the left of the hand).
      */
     public void update(IplImage im) {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         // scale and convert image format to HSV
         cvResize(im, scaleImg);
         cvCvtColor(scaleImg, hsvImg, CV_BGR2HSV);
-
         // threshold the image using the loaded HSV settings for the user's glove
         cvInRangeS(hsvImg, cvScalar(hueLower, satLower, briLower, 0),
                 cvScalar(hueUpper, satUpper, briUpper, 0), imgThreshed);
+//        TesterDrawer testerDrawer = TesterDrawer.getTester(imgThreshed);
+//        testerDrawer.setImage(imgThreshed);
+//        testerDrawer.repaint();
 
         cvMorphologyEx(imgThreshed, imgThreshed, null, null, CV_MOP_OPEN, 1);
         // do erosion followed by dilation on the image to remove specks of white & retain size
