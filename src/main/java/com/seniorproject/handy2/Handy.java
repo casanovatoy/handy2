@@ -1,4 +1,4 @@
-package com.toypinta.handy2;
+package com.seniorproject.handy2;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

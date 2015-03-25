@@ -1,15 +1,20 @@
-package com.toypinta.handy2;
+package com.seniorproject.handy2;
 
+import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.Pointer;
 import static org.bytedeco.javacpp.helper.opencv_imgproc.cvFindContours;
@@ -104,8 +109,8 @@ public class HandDetector {
         msgFont = new Font("SansSerif", Font.BOLD, 18);
 
         cogPt = new Point();
-        fingerTips = new ArrayList<Point>();
-        namedFingers = new ArrayList<FingerName>();
+        fingerTips = new ArrayList<>();
+        namedFingers = new ArrayList<>();
 
         tipPts = new Point[MAX_POINTS];   // coords of the finger tips
         foldPts = new Point[MAX_POINTS];  // coords of the skin folds between fingers
@@ -176,10 +181,13 @@ public class HandDetector {
         // detect the finger tips positions in the contour
 
         nameFingers(cogPt, contourAxisAngle, fingerTips);
+        controlMouse();
     }
 
-    private BufferedImage scaleImage(BufferedImage im, int scale) // scaling makes the image faster to process
-    {
+    /*
+     * scaling makes the image faster to process
+     */
+    private BufferedImage scaleImage(BufferedImage im, int scale) {
         int nWidth = im.getWidth() / scale;
         int nHeight = im.getHeight() / scale;
 
@@ -422,8 +430,7 @@ public class HandDetector {
     /*
      * attempt to label the thumb and index fingers of the hand
      */
-    private void labelThumbIndex(ArrayList<Point> fingerTips,
-            ArrayList<FingerName> nms) {
+    private void labelThumbIndex(ArrayList<Point> fingerTips, ArrayList<FingerName> nms) {
         boolean foundThumb = false;
         boolean foundIndex = false;
 
@@ -559,6 +566,7 @@ public class HandDetector {
 
         // label the finger tips in red or green, and draw COG lines to named tips
         g2d.setFont(msgFont);
+
         for (int i = 0; i < fingerTips.size(); i++) {
             Point pt = fingerTips.get(i);
             if (namedFingers.get(i) == FingerName.UNKNOWN) {
@@ -578,5 +586,24 @@ public class HandDetector {
         // draw COG
         g2d.setPaint(Color.GREEN);
         g2d.fillOval(cogPt.x - 8, cogPt.y - 8, 16, 16);
+    }
+
+    private void controlMouse() {
+        try {
+            Robot robot = new Robot();
+            for (int i = 0; i < fingerTips.size(); i++) {
+                Point pt = fingerTips.get(i);
+                if (namedFingers.get(0) == FingerName.INDEX) {
+                    robot.mousePress(InputEvent.BUTTON1_MASK);
+                    robot.mouseRelease(InputEvent.BUTTON1_MASK);
+                } else if (namedFingers.get(0) == FingerName.INDEX && namedFingers.get(1) == FingerName.MIDDLE){
+                    robot.mousePress(InputEvent.BUTTON2_MASK);
+                    robot.mouseRelease(InputEvent.BUTTON2_MASK);
+                }
+            }
+        } catch (AWTException ex) {
+            Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 }
