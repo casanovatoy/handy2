@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -157,7 +158,11 @@ public class HandDetector {
      * (assuming that the thumb is on the left of the hand).
      */
     public void update(IplImage im) {
-
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
+        }
         // scale and convert image format to HSV
         cvResize(im, scaleImg);
         cvCvtColor(scaleImg, hsvImg, CV_BGR2HSV);
@@ -591,16 +596,18 @@ public class HandDetector {
     private void controlMouse() {
         try {
             Robot robot = new Robot();
-            for (int i = 0; i < fingerTips.size(); i++) {
-                Point pt = fingerTips.get(i);
+            if (namedFingers.size() == 1) {
                 if (namedFingers.get(0) == FingerName.INDEX) {
                     robot.mousePress(InputEvent.BUTTON1_MASK);
                     robot.mouseRelease(InputEvent.BUTTON1_MASK);
-                } else if (namedFingers.get(0) == FingerName.INDEX && namedFingers.get(1) == FingerName.MIDDLE){
-                    robot.mousePress(InputEvent.BUTTON2_MASK);
-                    robot.mouseRelease(InputEvent.BUTTON2_MASK);
+                }
+            } else if (namedFingers.size() == 2) {
+                if (namedFingers.get(0) == FingerName.MIDDLE && namedFingers.get(1) == FingerName.INDEX) {
+                    robot.keyPress(KeyEvent.VK_ESCAPE);
+                    robot.keyRelease(KeyEvent.VK_ESCAPE);
                 }
             }
+    
         } catch (AWTException ex) {
             Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
         }
