@@ -15,7 +15,7 @@ public enum FingerName {
             nextIdx = 0;
         }
         return values()[nextIdx];
-    }  // end of getNext()
+    }
 
     public FingerName getPrev() {
         int prevIdx = ordinal() - 1;
@@ -23,6 +23,6 @@ public enum FingerName {
             prevIdx = values().length - 1;
         }
         return values()[prevIdx];
-    }  // end of getPrev()
+    }
 
-}  // end of FingerName enum
+}

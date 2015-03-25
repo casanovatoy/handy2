@@ -40,19 +40,20 @@ public class HandPanel extends JPanel implements Runnable {
         msgFont = new Font("Tahoma", Font.BOLD, 18);
 
         new Thread(this).start();   // start updating the panel's image
-    } // end of HandPanel()
+    }
 
     public Dimension getPreferredSize() // make the panel wide enough for an image
     {
         return new Dimension(WIDTH, HEIGHT);
     }
 
-    public void run() /* display the current webcam image every DELAY ms.
-     Find the coloured rectangles in the image using HandDetector
-     objects.
-     The time statistics gathered here include the time taken to
-     detect movement.
-     */ {
+    /* display the current webcam image every DELAY ms.
+     * Find the coloured rectangles in the image using HandDetector
+     * objects.
+     * The time statistics gathered here include the time taken to
+     * detect movement.
+     */
+    public void run() {
         FrameGrabber grabber = initGrabber(CAMERA_ID);
         if (grabber == null) {
             return;
@@ -85,7 +86,7 @@ public class HandPanel extends JPanel implements Runnable {
         closeGrabber(grabber, CAMERA_ID);
         System.out.println("Execution terminated");
         isFinished = true;
-    }  // end of run()
+    }
 
     private FrameGrabber initGrabber(int ID) {
         FrameGrabber grabber = null;
@@ -102,7 +103,7 @@ public class HandPanel extends JPanel implements Runnable {
             System.exit(1);
         }
         return grabber;
-    }  // end of initGrabber()
+    }
 
     private IplImage picGrab(FrameGrabber grabber, int ID) {
         IplImage im = null;
@@ -112,7 +113,7 @@ public class HandPanel extends JPanel implements Runnable {
             System.out.println("Problem grabbing image for camera " + ID);
         }
         return im;
-    }  // end of picGrab()
+    }
 
     private void closeGrabber(FrameGrabber grabber, int ID) {
         try {
@@ -121,11 +122,13 @@ public class HandPanel extends JPanel implements Runnable {
         } catch (Exception e) {
             System.out.println("Problem stopping grabbing for camera " + ID);
         }
-    }  // end of closeGrabber()
+    }
 
-    public void paintComponent(Graphics g) /* Draw the image, the detected hand and finger info, and the 
-     average ms snap time at the bottom left of the panel. 
-     */ {
+    /*
+     * Draw the image, the detected hand and finger info, and the 
+     * average ms snap time at the bottom left of the panel. 
+     */
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
@@ -137,10 +140,12 @@ public class HandPanel extends JPanel implements Runnable {
             detector.draw(g2d);    // draws detected hand and finger info
         }
         writeStats(g2d);
-    } // end of paintComponent()
+    }
 
-    private void writeStats(Graphics2D g2d) /* write statistics in bottom-left corner, or
-     "Loading" at start time */ {
+    /* write statistics in bottom-left corner, or
+     * "Loading" at start time 
+     */
+    private void writeStats(Graphics2D g2d) {
         g2d.setColor(Color.BLUE);
         g2d.setFont(msgFont);
         if (imageCount > 0) {
@@ -152,12 +157,14 @@ public class HandPanel extends JPanel implements Runnable {
         {
             g2d.drawString("Loading...", 5, HEIGHT - 10);
         }
-    }  // end of writeStats()
+    }
 
-  // --------------- called from the top-level JFrame ------------------
-    public void closeDown() /* Terminate run() and wait for it to finish.
-     This stops the application from exiting until everything
-     has finished. */ {
+    // --------------- called from the top-level JFrame ------------------
+    /* Terminate run() and wait for it to finish.
+     * This stops the application from exiting until everything
+     * has finished.
+     */
+    public void closeDown() {
         isRunning = false;
         while (!isFinished) {
             try {
@@ -165,6 +172,6 @@ public class HandPanel extends JPanel implements Runnable {
             } catch (Exception ex) {
             }
         }
-    } // end of closeDown()
+    }
 
-} // end of HandPanel class
+}

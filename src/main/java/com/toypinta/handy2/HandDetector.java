@@ -112,11 +112,14 @@ public class HandDetector {
         depths = new float[MAX_POINTS];   // distances from tips to folds
 
         setHSVRanges(hsvFnm);
-    }  // end of HandDetector()
+    }
 
-    private void setHSVRanges(String fnm) /* read in three lines to set the lower/upper HSV ranges for the user's glove. 
-     These were previously stored using the HSV Selector application 
-     (see NUI chapter 5 on blobs drumming). */ {
+    /**
+     * read in three lines to set the lower/upper HSV ranges for the user's
+     * glove. These were previously stored using the HSV Selector application
+     * (see NUI chapter 5 on blobs drumming).
+     */
+    private void setHSVRanges(String fnm) {
         try {
             BufferedReader in = new BufferedReader(new FileReader(fnm));
             String line = in.readLine();   // get hues
@@ -140,14 +143,15 @@ public class HandDetector {
             System.out.println("Could not read HSV ranges from " + fnm);
             System.exit(1);
         }
-    }  // end of setHSVRanges()
+    }
 
-    public void update(IplImage im) /* Convert the image to HSV format. Calculate a threshold
-     image using the HSV ranges for the colour being detected. Find
-     the largest contour in the threshold image. Find the finger tips
-     using a convex hull and defects detection, and then label the fingers
-     (assuming that the thumb is on the left of the hand).
-     */ {
+    /* Convert the image to HSV format. Calculate a threshold
+     * image using the HSV ranges for the colour being detected. Find
+     * the largest contour in the threshold image. Find the finger tips
+     * using a convex hull and defects detection, and then label the fingers
+     * (assuming that the thumb is on the left of the hand).
+     */
+    public void update(IplImage im) {
 
         // scale and convert image format to HSV
         cvResize(im, scaleImg);
@@ -172,7 +176,7 @@ public class HandDetector {
         // detect the finger tips positions in the contour
 
         nameFingers(cogPt, contourAxisAngle, fingerTips);
-    }  // end of update()
+    }
 
     private BufferedImage scaleImage(BufferedImage im, int scale) // scaling makes the image faster to process
     {
@@ -188,10 +192,12 @@ public class HandDetector {
                 0, 0, im.getWidth(), im.getHeight(), null);
         g2.dispose();
         return smallIm;
-    }  // end of scaleImage()
+    }
 
-    private CvSeq findBiggestContour(IplImage imgThreshed) // return the largest contour in the threshold image
-    {
+    /**
+     * return the largest contour in the threshold image
+     */
+    private CvSeq findBiggestContour(IplImage imgThreshed) {
         CvSeq bigContour = null;
 
         // generate all the contours in the threshold image as a list
@@ -217,12 +223,13 @@ public class HandDetector {
             contours = contours.h_next();
         }
         return bigContour;
-    }  // end of findBiggestContour()
+    }
 
-  // ----------------- analyze contour ----------------------------
-    private void extractContourInfo(CvSeq bigContour, int scale) /* calculate COG and angle of the contour's main axis relative to the horizontal.
-     Store them in the globals cogPt and contourAxisAngle
-     */ {
+    // ----------------- analyze contour ----------------------------
+    /* calculate COG and angle of the contour's main axis relative to the horizontal.
+     * Store them in the globals cogPt and contourAxisAngle
+     */
+    private void extractContourInfo(CvSeq bigContour, int scale) {
         CvMoments moments = new CvMoments();
         cvMoments(bigContour, moments, 1);     // CvSeq is a subclass of CvArr
 
@@ -241,12 +248,10 @@ public class HandDetector {
         double m20 = cvGetCentralMoment(moments, 2, 0);
         double m02 = cvGetCentralMoment(moments, 0, 2);
         contourAxisAngle = calculateTilt(m11, m20, m02);
-        /* this angle assumes that the positive y-axis
-         is down the screen */
+        // this angle assumes that the positive y-axis is down the screen 
 
-    // deal with hand contour pointing downwards
-    /* uses fingertips information generated on the last update of
-         the hand, so will be out-of-date */
+        // deal with hand contour pointing downwards
+        // uses fingertips information generated on the last update of the hand, so will be out-of-date
         if (fingerTips.size() > 0) {
             int yTotal = 0;
             for (Point pt : fingerTips) {
@@ -259,20 +264,20 @@ public class HandDetector {
             }
         }
         contourAxisAngle = 180 - contourAxisAngle;
-        /* this makes the angle relative to a positive y-axis that
-         runs up the screen */
+        // this makes the angle relative to a positive y-axis that runs up the screen
 
         // System.out.println("Contour angle: " + contourAxisAngle);
-    }  // end of extractContourInfo()
+    }
 
-    private int calculateTilt(double m11, double m20, double m02) /* Return integer degree angle of contour's major axis relative to the horizontal, 
-     assuming that the positive y-axis goes down the screen. 
-
-     This code is based on maths explained in "Simple Image Analysis By Moments", by
-     Johannes Kilian, March 15, 2001 (see Table 1 on p.7). 
-     The paper is available at:
-     http://public.cranfield.ac.uk/c5354/teaching/dip/opencv/SimpleImageAnalysisbyMoments.pdf
-     */ {
+    /* Return integer degree angle of contour's major axis relative to the horizontal, 
+     * assuming that the positive y-axis goes down the screen. 
+     *
+     * This code is based on maths explained in "Simple Image Analysis By Moments", by
+     * Johannes Kilian, March 15, 2001 (see Table 1 on p.7). 
+     * The paper is available at:
+     * http://public.cranfield.ac.uk/c5354/teaching/dip/opencv/SimpleImageAnalysisbyMoments.pdf
+     */
+    private int calculateTilt(double m11, double m20, double m02) {
         double diff = m20 - m02;
         if (diff == 0) {
             if (m11 == 0) {
@@ -307,12 +312,13 @@ public class HandDetector {
         }
         System.out.println("Error in moments for tilt angle");
         return 0;
-    }  // end of calculateTilt()
+    }
 
-  // ---------------- analyze fingers -------------------------
-    private void findFingerTips(CvSeq bigContour, int scale) /* Starting with the contour, calculate its convex hull, and its
-     convexity defects. Ignore defects that are unlikely to be fingers.
-     */ {
+    // ---------------- analyze fingers -------------------------
+    /* Starting with the contour, calculate its convex hull, and its
+     * convexity defects. Ignore defects that are unlikely to be fingers.
+     */
+    private void findFingerTips(CvSeq bigContour, int scale) {
         CvSeq approxContour = cvApproxPoly(bigContour, Loader.sizeof(CvContour.class),
                 approxStorage, CV_POLY_APPROX_DP, 3, 1);
         // reduce number of points in the contour
@@ -348,13 +354,14 @@ public class HandDetector {
         }
 
         reduceTips(defectsTotal, tipPts, foldPts, depths);
-    }  // end of findFingerTips()
+    }
 
-    private void reduceTips(int numPoints, Point[] tipPts, Point[] foldPts, float[] depths) /* Narrow in on 'real' finger tips by ignoring shallow defect depths, and tips
-     which have too great an angle between their neighbouring fold points.
-
-     Store the resulting finger tip coordinates in the global fingerTips list.
-     */ {
+    /* Narrow in on 'real' finger tips by ignoring shallow defect depths, and tips
+     * which have too great an angle between their neighbouring fold points.
+     *
+     * Store the resulting finger tip coordinates in the global fingerTips list.
+     */
+    private void reduceTips(int numPoints, Point[] tipPts, Point[] foldPts, float[] depths) {
         fingerTips.clear();
 
         for (int i = 0; i < numPoints; i++) {
@@ -376,26 +383,30 @@ public class HandDetector {
             fingerTips.add(tipPts[i]);
         }
         // System.out.println("No. of finger tips: " + fingerTips.size());
-    }  // end of reduceTips()
+    }
 
-    private int angleBetween(Point tip, Point next, Point prev) // calulate the angle between the tip and its neigbouring folds (in integer degrees)
-    {
+    /*
+     * calulate the angle between the tip and its neigbouring folds (in integer degrees)
+     */
+    private int angleBetween(Point tip, Point next, Point prev) {
         return Math.abs((int) Math.round(
                 Math.toDegrees(
                         Math.atan2(next.x - tip.x, next.y - tip.y)
                         - Math.atan2(prev.x - tip.x, prev.y - tip.y))));
     }
 
-  // ------------------------------- identify the fingers -----------------------
-    private void nameFingers(Point cogPt, int contourAxisAngle, ArrayList<Point> fingerTips) /* Use the finger tip coordinates, and the comtour's COG and axis angle to horizontal
-     to label the fingers.
-
-     Try to label the thumb and index based on their likely angle ranges
-     relative to the COG. This assumes that the thumb and index finger are on the
-     left side of the hand.
-
-     Then label the other fingers based on the order of the names in the FingerName class
-     */ { // reset all named fingers to unknown
+    // ------------------------------- identify the fingers -----------------------
+    /* Use the finger tip coordinates, and the comtour's COG and axis angle to horizontal
+     * to label the fingers.
+     *
+     * Try to label the thumb and index based on their likely angle ranges
+     * relative to the COG. This assumes that the thumb and index finger are on the
+     * left side of the hand.
+     *
+     * Then label the other fingers based on the order of the names in the FingerName class
+     */
+    private void nameFingers(Point cogPt, int contourAxisAngle, ArrayList<Point> fingerTips) {
+        // reset all named fingers to unknown
         namedFingers.clear();
         for (int i = 0; i < fingerTips.size(); i++) {
             namedFingers.add(FingerName.UNKNOWN);
@@ -406,11 +417,13 @@ public class HandDetector {
         // printFingers("named fingers", namedFingers);
         labelUnknowns(namedFingers);
         // printFingers("revised named fingers", namedFingers);
-    }  // end of nameFingers()
+    }
 
+    /*
+     * attempt to label the thumb and index fingers of the hand
+     */
     private void labelThumbIndex(ArrayList<Point> fingerTips,
-            ArrayList<FingerName> nms) // attempt to label the thumb and index fingers of the hand
-    {
+            ArrayList<FingerName> nms) {
         boolean foundThumb = false;
         boolean foundIndex = false;
 
@@ -437,10 +450,12 @@ public class HandDetector {
             }
             i--;
         }
-    }  // end of labelThumbIndex()
+    }
 
-    private int angleToCOG(Point tipPt, Point cogPt, int contourAxisAngle) /* calculate angle of tip relative to the COG, remembering to add the
-     hand contour angle so that the hand is orientated straight up */ {
+    /* calculate angle of tip relative to the COG, remembering to add the
+     * hand contour angle so that the hand is orientated straight up 
+     */
+    private int angleToCOG(Point tipPt, Point cogPt, int contourAxisAngle) {
         int yOffset = cogPt.y - tipPt.y;    // make y positive up screen
         int xOffset = tipPt.x - cogPt.x;
         // Point offsetPt = new Point(xOffset, yOffset);
@@ -450,7 +465,7 @@ public class HandDetector {
         int offsetAngleTip = angleTip + (90 - contourAxisAngle);
         // this addition ensures that the hand is orientated straight up
         return offsetAngleTip;
-    }  // end of angleToCOG()
+    }
 
     private void printFingers(String title, ArrayList<FingerName> nms) {
         System.out.println(title);
@@ -459,8 +474,10 @@ public class HandDetector {
         }
     }
 
-    private void labelUnknowns(ArrayList<FingerName> nms) // attempt to label all the unknown fingers in the list
-    {
+    /*
+     * attempt to label all the unknown fingers in the list
+     */
+    private void labelUnknowns(ArrayList<FingerName> nms) {
         // find first named finger
         int i = 0;
         while ((i < nms.size()) && (nms.get(i) == FingerName.UNKNOWN)) {
@@ -474,10 +491,12 @@ public class HandDetector {
         FingerName name = nms.get(i);
         labelPrev(nms, i, name);    // fill-in backwards
         labelFwd(nms, i, name);    // fill-in forwards
-    }  // end of labelUnknowns()
+    }
 
-    private void labelPrev(ArrayList<FingerName> nms, int i, FingerName name) // move backwards through fingers list labelling unknown fingers
-    {
+    /*
+     *  move backwards through fingers list labelling unknown fingers
+     */
+    private void labelPrev(ArrayList<FingerName> nms, int i, FingerName name) {
         i--;
         while ((i >= 0) && (name != FingerName.UNKNOWN)) {
             if (nms.get(i) == FingerName.UNKNOWN) {   // unknown finger
@@ -491,10 +510,12 @@ public class HandDetector {
             }
             i--;
         }
-    }  // end of labelPrev()
+    }
 
-    private void labelFwd(ArrayList<FingerName> nms, int i, FingerName name) // move forward through fingers list labelling unknown fingers
-    {
+    /*
+     * move forward through fingers list labelling unknown fingers
+     */
+    private void labelFwd(ArrayList<FingerName> nms, int i, FingerName name) {
         i++;
         while ((i < nms.size()) && (name != FingerName.UNKNOWN)) {
             if (nms.get(i) == FingerName.UNKNOWN) {  // unknown finger
@@ -508,10 +529,12 @@ public class HandDetector {
             }
             i++;
         }
-    }  // end of labelFwd()
+    }
 
-    private boolean usedName(ArrayList<FingerName> nms, FingerName name) // does the fingers list contain name already?
-    {
+    /*
+     * does the fingers list contain name already?
+     */
+    private boolean usedName(ArrayList<FingerName> nms, FingerName name) {
         for (FingerName fn : nms) {
             if (fn == name) {
                 return true;
@@ -520,10 +543,12 @@ public class HandDetector {
         return false;
     }  // end of usedName()
 
-  // --------------------------- drawing ----------------------------------
-    public void draw(Graphics2D g2d) // draw information about the finger tips and the hand COG
-    {
-        if (fingerTips.size() == 0) {
+    // --------------------------- drawing ----------------------------------
+    /*
+     * draw information about the finger tips and the hand COG
+     */
+    public void draw(Graphics2D g2d) {
+        if (fingerTips.isEmpty()) {
             return;
         }
 
@@ -553,6 +578,5 @@ public class HandDetector {
         // draw COG
         g2d.setPaint(Color.GREEN);
         g2d.fillOval(cogPt.x - 8, cogPt.y - 8, 16, 16);
-    }  // end of draw()
-
-}  // end of HandDetector class
+    }
+}

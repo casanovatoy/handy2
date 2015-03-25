@@ -14,8 +14,6 @@ import org.bytedeco.javacpp.*;
  */
 public class Handy extends JFrame {
 
-    // GUI components
-
     private HandPanel handPanel;
 
     public Handy() {
@@ -42,11 +40,10 @@ public class Handy extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-    } // end of Handy()
+    }
 
-  // -------------------------------------------------------
     public static void main(String args[]) {
         new Handy();
     }
 
-} // end of Handy class
+}
