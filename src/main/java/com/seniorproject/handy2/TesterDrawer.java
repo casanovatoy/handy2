@@ -8,11 +8,14 @@ package com.seniorproject.handy2;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import org.bytedeco.javacpp.opencv_core.IplImage;
-import org.bytedeco.javacpp.opencv_highgui;
 
 /**
  *
@@ -21,14 +24,18 @@ import org.bytedeco.javacpp.opencv_highgui;
 public class TesterDrawer extends JFrame {
 
     private IplImage image;
-
+    private TesterPanel panel = TesterPanel.getTester();
     private static TesterDrawer t;
 
-    public TesterDrawer(IplImage image) throws HeadlessException {
+    public TesterDrawer(IplImage img) throws HeadlessException {
         this.setTitle("Test Output");
-        this.image = image;
+        this.image = img;
         this.setVisible(true);
         this.setDefaultCloseOperation(TesterDrawer.EXIT_ON_CLOSE);
+        this.setSize(640, 480);
+        panel.setImage(this.image);
+        this.add(panel);
+
     }
 
     public static TesterDrawer getTester(IplImage image) {
@@ -38,21 +45,12 @@ public class TesterDrawer extends JFrame {
         return t;
     }
 
-    @Override
-    public void paintComponents(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        BufferedImage img = image.getBufferedImage();
-        if (img != null) {
-            g2.drawImage(img, 0, 0, this);
-            g2.dispose();
-        } else {
-            System.out.println("Error Tester");
-        }
-
+    public void setImage(IplImage img) {
+        this.image = img;
     }
 
-    public void setImage(IplImage image) {
-        this.image = image;
+    public void draw() {
+        panel.repaint();
     }
 
 }

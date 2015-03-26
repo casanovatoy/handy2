@@ -168,7 +168,7 @@ public class HandDetector {
 
         TesterDrawer testerDrawer = TesterDrawer.getTester(imgThreshed);
         testerDrawer.setImage(imgThreshed);
-        testerDrawer.repaint();
+        testerDrawer.draw();
 
         cvMorphologyEx(imgThreshed, imgThreshed, null, null, CV_MOP_OPEN, 1);
         // do erosion followed by dilation on the image to remove specks of white & retain size
@@ -605,7 +605,7 @@ public class HandDetector {
                     count1++;
                 }
                 if (namedFingers.get(0) == FingerName.INDEX 
-                        && count1 == 5) {
+                        && count1 == 10) {
                     robot.mousePress(InputEvent.BUTTON1_MASK);
                     robot.mouseRelease(InputEvent.BUTTON1_MASK);
                     count1 = 0;
@@ -617,7 +617,7 @@ public class HandDetector {
                 }
                 if (namedFingers.get(0) == FingerName.MIDDLE
                         && namedFingers.get(1) == FingerName.INDEX
-                        && count2 == 5) {
+                        && count2 == 10) {
                     robot.keyPress(KeyEvent.VK_ESCAPE);
                     robot.keyRelease(KeyEvent.VK_ESCAPE);
                     count2 = 0;

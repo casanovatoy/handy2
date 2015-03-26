@@ -42,6 +42,7 @@ public class HandPanel extends JPanel implements Runnable {
         new Thread(this).start();   // start updating the panel's image
     }
 
+    @Override
     public Dimension getPreferredSize() // make the panel wide enough for an image
     {
         return new Dimension(WIDTH, HEIGHT);
@@ -53,6 +54,7 @@ public class HandPanel extends JPanel implements Runnable {
      * The time statistics gathered here include the time taken to
      * detect movement.
      */
+    @Override
     public void run() {
         FrameGrabber grabber = initGrabber(CAMERA_ID);
         if (grabber == null) {
@@ -128,6 +130,7 @@ public class HandPanel extends JPanel implements Runnable {
      * Draw the image, the detected hand and finger info, and the 
      * average ms snap time at the bottom left of the panel. 
      */
+    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
