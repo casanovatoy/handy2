@@ -6,11 +6,13 @@
 package com.seniorproject.handy2;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.bytedeco.javacpp.opencv_highgui;
 
 /**
  *
@@ -22,7 +24,7 @@ public class TesterDrawer extends JFrame {
 
     private static TesterDrawer t;
 
-    private TesterDrawer(IplImage image) throws HeadlessException {
+    public TesterDrawer(IplImage image) throws HeadlessException {
         this.setTitle("Test Output");
         this.image = image;
         this.setVisible(true);
@@ -38,9 +40,15 @@ public class TesterDrawer extends JFrame {
 
     @Override
     public void paintComponents(Graphics g) {
-        BufferedImage img = null;
-        image.copyTo(img);
-        g.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
+        Graphics2D g2 = (Graphics2D) g;
+        BufferedImage img = image.getBufferedImage();
+        if (img != null) {
+            g2.drawImage(img, 0, 0, this);
+            g2.dispose();
+        } else {
+            System.out.println("Error Tester");
+        }
+
     }
 
     public void setImage(IplImage image) {

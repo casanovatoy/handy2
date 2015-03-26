@@ -158,20 +158,17 @@ public class HandDetector {
      * (assuming that the thumb is on the left of the hand).
      */
     public void update(IplImage im) {
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+
         // scale and convert image format to HSV
         cvResize(im, scaleImg);
         cvCvtColor(scaleImg, hsvImg, CV_BGR2HSV);
         // threshold the image using the loaded HSV settings for the user's glove
         cvInRangeS(hsvImg, cvScalar(hueLower, satLower, briLower, 0),
                 cvScalar(hueUpper, satUpper, briUpper, 0), imgThreshed);
-//        TesterDrawer testerDrawer = TesterDrawer.getTester(imgThreshed);
-//        testerDrawer.setImage(imgThreshed);
-//        testerDrawer.repaint();
+
+        TesterDrawer testerDrawer = TesterDrawer.getTester(imgThreshed);
+        testerDrawer.setImage(imgThreshed);
+        testerDrawer.repaint();
 
         cvMorphologyEx(imgThreshed, imgThreshed, null, null, CV_MOP_OPEN, 1);
         // do erosion followed by dilation on the image to remove specks of white & retain size
@@ -595,21 +592,38 @@ public class HandDetector {
         g2d.fillOval(cogPt.x - 8, cogPt.y - 8, 16, 16);
     }
 
+    
+    // Debugging variable
+    private int count1 = 0;
+    private int count2 = 0;
+
     private void controlMouse() {
         try {
             Robot robot = new Robot();
             if (namedFingers.size() == 1) {
                 if (namedFingers.get(0) == FingerName.INDEX) {
+                    count1++;
+                }
+                if (namedFingers.get(0) == FingerName.INDEX 
+                        && count1 == 5) {
                     robot.mousePress(InputEvent.BUTTON1_MASK);
                     robot.mouseRelease(InputEvent.BUTTON1_MASK);
+                    count1 = 0;
                 }
             } else if (namedFingers.size() == 2) {
-                if (namedFingers.get(0) == FingerName.MIDDLE && namedFingers.get(1) == FingerName.INDEX) {
+                if (namedFingers.get(0) == FingerName.MIDDLE
+                        && namedFingers.get(1) == FingerName.INDEX) {
+                    count2++;
+                }
+                if (namedFingers.get(0) == FingerName.MIDDLE
+                        && namedFingers.get(1) == FingerName.INDEX
+                        && count2 == 5) {
                     robot.keyPress(KeyEvent.VK_ESCAPE);
                     robot.keyRelease(KeyEvent.VK_ESCAPE);
+                    count2 = 0;
                 }
             }
-    
+
         } catch (AWTException ex) {
             Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
         }
