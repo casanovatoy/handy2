@@ -592,7 +592,6 @@ public class HandDetector {
         g2d.fillOval(cogPt.x - 8, cogPt.y - 8, 16, 16);
     }
 
-    
     // Debugging variable
     private int count1 = 0;
     private int count2 = 0;
@@ -603,9 +602,10 @@ public class HandDetector {
             if (namedFingers.size() == 1) {
                 if (namedFingers.get(0) == FingerName.INDEX) {
                     count1++;
+                    count2 = 0;
                 }
-                if (namedFingers.get(0) == FingerName.INDEX 
-                        && count1 == 10) {
+                if (namedFingers.get(0) == FingerName.INDEX
+                        && count1 == 3) {
                     robot.mousePress(InputEvent.BUTTON1_MASK);
                     robot.mouseRelease(InputEvent.BUTTON1_MASK);
                     count1 = 0;
@@ -614,10 +614,11 @@ public class HandDetector {
                 if (namedFingers.get(0) == FingerName.MIDDLE
                         && namedFingers.get(1) == FingerName.INDEX) {
                     count2++;
+                    count1 = 0;
                 }
                 if (namedFingers.get(0) == FingerName.MIDDLE
                         && namedFingers.get(1) == FingerName.INDEX
-                        && count2 == 10) {
+                        && count2 == 3) {
                     robot.keyPress(KeyEvent.VK_ESCAPE);
                     robot.keyRelease(KeyEvent.VK_ESCAPE);
                     count2 = 0;
