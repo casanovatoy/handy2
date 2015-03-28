@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.seniorproject.handy2;
+package com.seniorproject.handy2.testprocess;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;

@@ -1,5 +1,6 @@
-package com.seniorproject.handy2;
+package com.seniorproject.handy2.main;
 
+import com.seniorproject.handy2.controller.HandPanel;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;

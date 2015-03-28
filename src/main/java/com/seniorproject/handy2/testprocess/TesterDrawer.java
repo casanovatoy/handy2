@@ -3,17 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.seniorproject.handy2;
+package com.seniorproject.handy2.testprocess;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.HeadlessException;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 

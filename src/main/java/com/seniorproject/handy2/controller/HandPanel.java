@@ -1,5 +1,6 @@
-package com.seniorproject.handy2;
+package com.seniorproject.handy2.controller;
 
+import com.seniorproject.handy2.algorithm.HandDetector;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;

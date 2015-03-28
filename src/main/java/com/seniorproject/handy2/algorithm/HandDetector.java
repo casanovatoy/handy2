@@ -1,5 +1,7 @@
-package com.seniorproject.handy2;
+package com.seniorproject.handy2.algorithm;
 
+import com.seniorproject.handy2.constant.FingerName;
+import com.seniorproject.handy2.testprocess.TesterDrawer;
 import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;

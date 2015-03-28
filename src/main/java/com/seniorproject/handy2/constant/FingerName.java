@@ -1,4 +1,4 @@
-package com.seniorproject.handy2;
+package com.seniorproject.handy2.constant;
 
 /**
  *
