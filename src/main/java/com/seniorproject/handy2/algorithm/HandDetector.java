@@ -607,10 +607,11 @@ public class HandDetector {
                     count2 = 0;
                 }
                 if (namedFingers.get(0) == FingerName.INDEX
-                        && count1 == 3) {
+                        && count1 == 2) {
                     robot.mousePress(InputEvent.BUTTON1_MASK);
                     robot.mouseRelease(InputEvent.BUTTON1_MASK);
                     count1 = 0;
+                    Thread.sleep(1000);
                 }
             } else if (namedFingers.size() == 2) {
                 if (namedFingers.get(0) == FingerName.MIDDLE
@@ -620,14 +621,17 @@ public class HandDetector {
                 }
                 if (namedFingers.get(0) == FingerName.MIDDLE
                         && namedFingers.get(1) == FingerName.INDEX
-                        && count2 == 3) {
+                        && count2 == 2) {
                     robot.keyPress(KeyEvent.VK_ESCAPE);
                     robot.keyRelease(KeyEvent.VK_ESCAPE);
                     count2 = 0;
+                    Thread.sleep(1000);
                 }
             }
 
         } catch (AWTException ex) {
+            Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
             Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
         }
 
