@@ -15,6 +15,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,25 +130,24 @@ public class HandDetector {
      */
     private void setHSVRanges(String fnm) {
         try {
-            BufferedReader in = new BufferedReader(new FileReader(fnm));
-            String line = in.readLine();   // get hues
-            String[] toks = line.split("\\s+");
-            hueLower = Integer.parseInt(toks[1]);
-            hueUpper = Integer.parseInt(toks[2]);
+            try (BufferedReader in = new BufferedReader(new FileReader(fnm))) {
+                String line = in.readLine();   // get hues
+                String[] toks = line.split("\\s+");
+                hueLower = Integer.parseInt(toks[1]);
+                hueUpper = Integer.parseInt(toks[2]);
 
-            line = in.readLine();   // get saturations
-            toks = line.split("\\s+");
-            satLower = Integer.parseInt(toks[1]);
-            satUpper = Integer.parseInt(toks[2]);
+                line = in.readLine();   // get saturations
+                toks = line.split("\\s+");
+                satLower = Integer.parseInt(toks[1]);
+                satUpper = Integer.parseInt(toks[2]);
 
-            line = in.readLine();   // get brightnesses
-            toks = line.split("\\s+");
-            briLower = Integer.parseInt(toks[1]);
-            briUpper = Integer.parseInt(toks[2]);
-
-            in.close();
+                line = in.readLine();   // get brightnesses
+                toks = line.split("\\s+");
+                briLower = Integer.parseInt(toks[1]);
+                briUpper = Integer.parseInt(toks[2]);
+            } // get hues
             System.out.println("Read HSV ranges from " + fnm);
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             System.out.println("Could not read HSV ranges from " + fnm);
             System.exit(1);
         }
@@ -167,14 +167,10 @@ public class HandDetector {
         // threshold the image using the loaded HSV settings for the user's glove
         cvInRangeS(hsvImg, cvScalar(hueLower, satLower, briLower, 0),
                 cvScalar(hueUpper, satUpper, briUpper, 0), imgThreshed);
-
-        TesterDrawer testerDrawer = TesterDrawer.getTester(imgThreshed);
-        testerDrawer.setImage(imgThreshed);
-        testerDrawer.draw();
+//        TesterDrawer.getTester().testImage(hsvImg);
 
         cvMorphologyEx(imgThreshed, imgThreshed, null, null, CV_MOP_OPEN, 1);
         // do erosion followed by dilation on the image to remove specks of white & retain size
-
         CvSeq bigContour = findBiggestContour(imgThreshed);
         if (bigContour == null) {
             return;
@@ -187,6 +183,7 @@ public class HandDetector {
         // detect the finger tips positions in the contour
 
         nameFingers(cogPt, contourAxisAngle, fingerTips);
+
         controlMouse();
     }
 
@@ -602,10 +599,6 @@ public class HandDetector {
         try {
             Robot robot = new Robot();
             if (namedFingers.size() == 1) {
-                if (namedFingers.get(0) == FingerName.INDEX) {
-                    count1++;
-                    count2 = 0;
-                }
                 if (namedFingers.get(0) == FingerName.INDEX
                         && count1 == 2) {
                     robot.mousePress(InputEvent.BUTTON1_MASK);
@@ -613,12 +606,11 @@ public class HandDetector {
                     count1 = 0;
                     Thread.sleep(1000);
                 }
-            } else if (namedFingers.size() == 2) {
-                if (namedFingers.get(0) == FingerName.MIDDLE
-                        && namedFingers.get(1) == FingerName.INDEX) {
-                    count2++;
-                    count1 = 0;
+                if (namedFingers.get(0) == FingerName.INDEX) {
+                    count1++;
+                    count2 = 0;
                 }
+            } else if (namedFingers.size() == 2) {
                 if (namedFingers.get(0) == FingerName.MIDDLE
                         && namedFingers.get(1) == FingerName.INDEX
                         && count2 == 2) {
@@ -627,11 +619,14 @@ public class HandDetector {
                     count2 = 0;
                     Thread.sleep(1000);
                 }
+                if (namedFingers.get(0) == FingerName.MIDDLE
+                        && namedFingers.get(1) == FingerName.INDEX) {
+                    count2++;
+                    count1 = 0;
+                }
             }
 
-        } catch (AWTException ex) {
-            Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
+        } catch (AWTException | InterruptedException ex) {
             Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
         }
 

@@ -15,33 +15,27 @@ import org.bytedeco.javacpp.opencv_core.IplImage;
  */
 public class TesterDrawer extends JFrame {
 
-    private IplImage image;
     private TesterPanel panel = TesterPanel.getTester();
     private static TesterDrawer t;
 
-    public TesterDrawer(IplImage img) throws HeadlessException {
+    public TesterDrawer() throws HeadlessException {
         this.setTitle("Test Output");
-        this.image = img;
         this.setVisible(true);
         this.setDefaultCloseOperation(TesterDrawer.EXIT_ON_CLOSE);
         this.setSize(640, 480);
-        panel.setImage(this.image);
         this.add(panel);
 
     }
 
-    public static TesterDrawer getTester(IplImage image) {
+    public static TesterDrawer getTester() {
         if (t == null) {
-            t = new TesterDrawer(image);
+            t = new TesterDrawer();
         }
         return t;
     }
 
-    public void setImage(IplImage img) {
-        this.image = img;
-    }
-
-    public void draw() {
+    public void testImage(IplImage img) {
+        panel.setImage(img);
         panel.repaint();
     }
 
