@@ -160,16 +160,23 @@ public class HandDetector {
      * (assuming that the thumb is on the left of the hand).
      */
     public void update(IplImage im) {
-
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
+        }
         // scale and convert image format to HSV
         cvResize(im, scaleImg);
+
         cvCvtColor(scaleImg, hsvImg, CV_BGR2HSV);
+
         // threshold the image using the loaded HSV settings for the user's glove
         cvInRangeS(hsvImg, cvScalar(hueLower, satLower, briLower, 0),
                 cvScalar(hueUpper, satUpper, briUpper, 0), imgThreshed);
-//        TesterDrawer.getTester().testImage(hsvImg);
 
         cvMorphologyEx(imgThreshed, imgThreshed, null, null, CV_MOP_OPEN, 1);
+//                TesterDrawer.getTester().testImage(imgThreshed);
+
         // do erosion followed by dilation on the image to remove specks of white & retain size
         CvSeq bigContour = findBiggestContour(imgThreshed);
         if (bigContour == null) {
@@ -601,8 +608,8 @@ public class HandDetector {
             if (namedFingers.size() == 1) {
                 if (namedFingers.get(0) == FingerName.INDEX
                         && count1 == 2) {
-                    robot.mousePress(InputEvent.BUTTON1_MASK);
-                    robot.mouseRelease(InputEvent.BUTTON1_MASK);
+                    robot.keyPress(KeyEvent.VK_RIGHT);
+                    robot.keyRelease(KeyEvent.VK_RIGHT);
                     count1 = 0;
                     Thread.sleep(1000);
                 }
@@ -624,6 +631,9 @@ public class HandDetector {
                     count2++;
                     count1 = 0;
                 }
+            } else {
+                count1 = 0;
+                count2 = 0;
             }
 
         } catch (AWTException | InterruptedException ex) {

@@ -23,7 +23,7 @@ public class HandPanel extends JPanel implements Runnable {
 
     private static final int DELAY = 200;  // time (ms) between redraws of the panel
 
-    private static final int CAMERA_ID = 0;
+    private static final int CAMERA_ID = 1;
 
     private IplImage snapIm = null;
     private volatile boolean isRunning;
