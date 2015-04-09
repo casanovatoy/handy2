@@ -596,16 +596,19 @@ public class HandDetector {
         // draw COG
         g2d.setPaint(Color.GREEN);
         g2d.fillOval(cogPt.x - 8, cogPt.y - 8, 16, 16);
+        g2d.drawString(Integer.toString(fingerNumber), 20, 20);
     }
 
     // Debugging variable
     private int count1 = 0;
     private int count2 = 0;
-
+    
+    private int fingerNumber;
     private void controlMouse() {
+        fingerNumber = (byte) namedFingers.size();
         try {
             Robot robot = new Robot();
-            if (namedFingers.size() == 1) {
+            if (fingerNumber == 1) {
                 if (namedFingers.get(0) == FingerName.INDEX
                         && count1 == 2) {
                     robot.keyPress(KeyEvent.VK_RIGHT);
@@ -617,7 +620,7 @@ public class HandDetector {
                     count1++;
                     count2 = 0;
                 }
-            } else if (namedFingers.size() == 2) {
+            } else if (fingerNumber == 2) {
                 if (namedFingers.get(0) == FingerName.MIDDLE
                         && namedFingers.get(1) == FingerName.INDEX
                         && count2 == 2) {
@@ -640,5 +643,9 @@ public class HandDetector {
             Logger.getLogger(HandDetector.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    
+    public int getTotalFinger(){
+        return (byte) fingerNumber;
     }
 }
