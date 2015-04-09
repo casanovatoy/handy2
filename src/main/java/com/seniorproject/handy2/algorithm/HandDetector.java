@@ -596,14 +596,27 @@ public class HandDetector {
         // draw COG
         g2d.setPaint(Color.GREEN);
         g2d.fillOval(cogPt.x - 8, cogPt.y - 8, 16, 16);
-        g2d.drawString(Integer.toString(fingerNumber), 20, 20);
+        String text = getTotalFinger();
+        if (text.equals("fail")) {
+            g2d.setPaint(new Color(0xFF5555));
+            g2d.drawRect(0, 0, 44, 30);
+            g2d.setPaint(Color.RED);
+            g2d.drawString(text, 10, 20);
+        } else {
+            g2d.setPaint(new Color(0xAAFFAA));
+            g2d.drawRect(0, 0, 30, 30);
+            g2d.setPaint(Color.GREEN);
+            g2d.drawString(text, 10, 20);
+        }
+
     }
 
     // Debugging variable
     private int count1 = 0;
     private int count2 = 0;
-    
+
     private int fingerNumber;
+
     private void controlMouse() {
         fingerNumber = (byte) namedFingers.size();
         try {
@@ -644,8 +657,12 @@ public class HandDetector {
         }
 
     }
-    
-    public int getTotalFinger(){
-        return (byte) fingerNumber;
+
+    public String getTotalFinger() {
+        if (fingerNumber != 1 && fingerNumber != 2) {
+            return "fail";
+        } else {
+            return Integer.toString(fingerNumber);
+        }
     }
 }
